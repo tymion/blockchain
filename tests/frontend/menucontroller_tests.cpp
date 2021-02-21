@@ -27,15 +27,18 @@ public:
 TEST_F(MenuControllerTest, runWithReadBlockchain)
 {
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::ReadBlockchain;
     });
     EXPECT_CALL(*view_, displayActionDoneMessage).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::QuitApplication;
     });
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menuController_->run(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -44,16 +47,19 @@ TEST_F(MenuControllerTest, runWithReadBlockchain)
 TEST_F(MenuControllerTest, runWithWriteBlockchain)
 {
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::WriteBlockchain;
     });
     EXPECT_CALL(*view_, displayActionDoneMessage).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::QuitApplication;
     });
 
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menuController_->run(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -62,23 +68,27 @@ TEST_F(MenuControllerTest, runWithWriteBlockchain)
 TEST_F(MenuControllerTest, runWithAddDataElement)
 {
     using namespace std::literals;
-    using Buffer     = frontend::MenuView::Buffer;
-    auto TEST_BUFFER = "BlockchainDataElement"s;
+    using Buffer    = frontend::MenuView::Buffer;
+    auto testBuffer = "BlockchainDataElement"s;
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::AddDataElement;
     });
     EXPECT_CALL(*view_, displayRequestForBuffer).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getBuffer).InSequence(seq_).WillOnce([&]() -> asio::awaitable<Buffer> {
-        co_return TEST_BUFFER;
+        co_return testBuffer;
     });
     EXPECT_CALL(*view_, displayActionDoneMessage).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::QuitApplication;
     });
 
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menuController_->run(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -87,16 +97,19 @@ TEST_F(MenuControllerTest, runWithAddDataElement)
 TEST_F(MenuControllerTest, runWithGenerateBlockchain)
 {
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::GenerateBlockchain;
     });
     EXPECT_CALL(*view_, displayBlockMessage).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::QuitApplication;
     });
 
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menuController_->run(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -107,17 +120,21 @@ TEST_F(MenuControllerTest, runWithGetBlock)
     constexpr auto TEST_ID = 13;
     using Id               = frontend::MenuView::Id;
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::GetBlock;
     });
     EXPECT_CALL(*view_, displayRequestForBlockId).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getId).InSequence(seq_).WillOnce([&]() -> asio::awaitable<Id> { co_return TEST_ID; });
     EXPECT_CALL(*view_, displayBlockMessage).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::QuitApplication;
     });
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menuController_->run(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -129,21 +146,26 @@ TEST_F(MenuControllerTest, runWithGetDataElement)
     constexpr auto TEST_DATAELEMENTID = 2;
     using Id                          = frontend::MenuView::Id;
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::GetDataElement;
     });
     EXPECT_CALL(*view_, displayRequestForBlockId).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getId).InSequence(seq_).WillOnce([&]() -> asio::awaitable<Id> { co_return TEST_BLOCKID; });
     EXPECT_CALL(*view_, displayRequestForDataElementId).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getId).InSequence(seq_).WillOnce([&]() -> asio::awaitable<Id> {
         co_return TEST_DATAELEMENTID;
     });
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::QuitApplication;
     });
 
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menuController_->run(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -151,20 +173,20 @@ TEST_F(MenuControllerTest, runWithGetDataElement)
 // NOLINTNEXTLINE
 TEST_F(MenuControllerTest, runWithGetStatistics)
 {
-    using namespace std::literals;
-    using Buffer     = frontend::MenuView::Buffer;
-    auto TEST_BUFFER = "BlockchainDataElement"s;
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::GetStatistics;
     });
     EXPECT_CALL(*view_, displayStatisticsMessage).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::QuitApplication;
     });
 
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menuController_->run(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -173,15 +195,18 @@ TEST_F(MenuControllerTest, runWithGetStatistics)
 TEST_F(MenuControllerTest, runWithCheckIntegrity)
 {
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::CheckIntegrity;
     });
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
+    // NOLINTNEXTLINE(readability-identifier-naming)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::QuitApplication;
     });
 
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menuController_->run(); }, tests::Detached{});
     ioContext_.run();
 }

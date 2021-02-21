@@ -1,5 +1,5 @@
-add_library(frontend INTERFACE)
+add_library(frontend menucontroller.cpp)
 
-target_link_libraries(frontend INTERFACE asio)
+target_link_libraries(frontend PUBLIC asio)
 
-set_target_properties(io PROPERTIES CXX_CLANG_TIDY clang-tidy-10)
+set_target_properties(frontend PROPERTIES CXX_CLANG_TIDY clang-tidy-10)

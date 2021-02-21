@@ -12,6 +12,8 @@ using namespace ::testing;
 using namespace std::literals;
 using namespace io::tests;
 
+constexpr auto MENU_COUNT = static_cast<int>(frontend::MenuView::UserEvent::Cnt);
+
 class ConsoleMenuTest : public Test
 {
 public:
@@ -25,8 +27,9 @@ public:
 // NOLINTNEXTLINE
 TEST_F(ConsoleMenuTest, displayMainMenu)
 {
-    EXPECT_CALL(*rw_, write).Times(9);
+    EXPECT_CALL(*rw_, write).Times(MENU_COUNT);
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menu_->displayMainMenu(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -36,6 +39,7 @@ TEST_F(ConsoleMenuTest, clearScreen)
 {
     EXPECT_CALL(*rw_, write).Times(1);
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menu_->clearScreen(); }, tests::Detached{});
     ioContext_.run();
 }
@@ -45,6 +49,7 @@ TEST_F(ConsoleMenuTest, displayCloseMessage)
 {
     EXPECT_CALL(*rw_, write).Times(1);
     co_spawn(
+        // NOLINTNEXTLINE(readability-identifier-naming)
         ioContext_, [&]() -> asio::awaitable<void> { co_await menu_->displayCloseMessage(); }, tests::Detached{});
     ioContext_.run();
 }

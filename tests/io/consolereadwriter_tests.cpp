@@ -14,7 +14,8 @@ using namespace io;
 class ConsoleReadWriterTest : public Test
 {
 public:
-    asio::io_context ioContext_{1};
+    asio::io_context ioContext_{1};  // NOLINT(misc-non-private-member-variables-in-classes)
+    io::ConsoleReadWriter rw_{ioContext_.get_executor()};
 };
 }  // namespace
 
@@ -23,11 +24,10 @@ TEST_F(ConsoleReadWriterTest, WriteHelloWorld)
 {
     co_spawn(
         ioContext_,
-        []() -> asio::awaitable<void> {
-            auto executor = co_await asio::this_coro::executor;
-            auto rw       = std::make_unique<io::ConsoleReadWriter>(executor);
-            auto txt      = "Hello World\n"s;
-            co_await rw->write(txt);
+        // NOLINTNEXTLINE(readability-identifier-naming)
+        [&]() -> asio::awaitable<void> {
+            auto txt = "Hello World\n"s;
+            co_await rw_.write(txt);
         },
         tests::Detached{});
     ioContext_.run();
@@ -38,11 +38,10 @@ TEST_F(ConsoleReadWriterTest, ReadHelloWorld)
 {
     co_spawn(
         ioContext_,
-        []() -> asio::awaitable<void> {
-            auto executor = co_await asio::this_coro::executor;
-            auto rw       = std::make_unique<io::ConsoleReadWriter>(executor);
-            auto txt      = co_await rw->read();
-            co_await rw->write(txt);
+        // NOLINTNEXTLINE(readability-identifier-naming)
+        [&]() -> asio::awaitable<void> {
+            auto txt = co_await rw_.read();
+            co_await rw_.write(txt);
         },
         tests::Detached{});
     ioContext_.run();

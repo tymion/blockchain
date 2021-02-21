@@ -7,3 +7,4 @@ target_link_libraries(io_consolereadwriter_tests
     test_headers
 )
 add_test(io_consolereadwriter_tests io_consolereadwriter_tests)
+set_target_properties(io_consolereadwriter_tests PROPERTIES CXX_CLANG_TIDY clang-tidy-10)

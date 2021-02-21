@@ -47,3 +47,7 @@ compile_flags.txt
 
 #python
 __pycache__/
+
+# Visual Studio Code
+.vscode
+build

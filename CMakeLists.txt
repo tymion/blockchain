@@ -29,4 +29,5 @@ add_subdirectory(ext/googletest EXCLUDE_FROM_ALL)
 
 add_subdirectory(src/asio-cmake)
 add_subdirectory(src/io)
+add_subdirectory(src/frontend)
 add_subdirectory(tests)

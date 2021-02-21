@@ -12,7 +12,7 @@ class AsyncReadWriter
 public:
     virtual ~AsyncReadWriter() = default;
 
-    virtual auto write(std::string_view buffer) -> asio::awaitable<void> = 0;
+    virtual auto write(std::string_view buffer) noexcept -> asio::awaitable<void> = 0;
 
     virtual auto read() -> asio::awaitable<std::string> = 0;
 };

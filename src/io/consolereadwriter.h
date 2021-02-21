@@ -15,7 +15,7 @@ class ConsoleReadWriter : public AsyncReadWriter
 public:
     ConsoleReadWriter(const asio::any_io_executor& executor);
 
-    auto write(std::string_view buffer) -> asio::awaitable<void> override;
+    auto write(std::string_view buffer) noexcept -> asio::awaitable<void> override;
 
     auto read() -> asio::awaitable<std::string> override;
 

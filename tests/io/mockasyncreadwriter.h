@@ -9,7 +9,13 @@ namespace io::tests
 class MockAsyncReadWriter : public AsyncReadWriter
 {
 public:
-    MOCK_METHOD(asio::awaitable<void>, write, (std::string_view), (override));
+    MockAsyncReadWriter()
+    {
+        ON_CALL(*this, write).WillByDefault([](auto) -> asio::awaitable<void> { co_return; });
+        ON_CALL(*this, read).WillByDefault([]() -> asio::awaitable<std::string> { co_return std::string{}; });
+    }
+
+    MOCK_METHOD(asio::awaitable<void>, write, (std::string_view), (noexcept, override));
     MOCK_METHOD(asio::awaitable<std::string>, read, (), (override));
 };
 

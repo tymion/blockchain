@@ -28,3 +28,4 @@ target_include_directories(headers
 add_subdirectory(ext/googletest EXCLUDE_FROM_ALL)
 
 add_subdirectory(src/asio-cmake)
+add_subdirectory(tests)

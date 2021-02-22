@@ -22,6 +22,7 @@ public:
     {
         for (auto i = 0; i < MAINMENU_OPTIONS_CNT; i++)
         {
+            co_await rw_->write(std::to_string(i) + ") ");
             co_await rw_->write(mainMenu_[i]);
         }
     }
@@ -40,53 +41,64 @@ public:
 
     auto displayRequestForBuffer() -> asio::awaitable<void> override
     {
-        constexpr auto MSG = "Please provide data element:";
+        constexpr auto MSG = "Please provide data element:\n";
         co_await rw_->write(MSG);
     }
 
     auto displayRequestForBlockId() -> asio::awaitable<void> override
     {
-        constexpr auto MSG = "Please provide block id:";
+        constexpr auto MSG = "Please provide block id:\n";
         co_await rw_->write(MSG);
     }
 
     auto displayRequestForDataElementId() -> asio::awaitable<void> override
     {
-        constexpr auto MSG = "Please provide data element id:";
+        constexpr auto MSG = "Please provide data element id:\n";
         co_await rw_->write(MSG);
     }
 
     auto displayActionDoneMessage() -> asio::awaitable<void> override
     {
-        constexpr auto MSG = "Please provide data element id:";
+        constexpr auto MSG = "Done. Please press any key to return to main menu.\n";
         co_await rw_->write(MSG);
     }
 
     auto displayBlockMessage() -> asio::awaitable<void> override
     {
-        constexpr auto MSG = "Please provide data element id:";
+        constexpr auto MSG = "Please provide data element id:\n";
         co_await rw_->write(MSG);
     }
 
     auto displayStatisticsMessage() -> asio::awaitable<void> override
     {
-        constexpr auto MSG = "Please provide data element id:";
+        constexpr auto MSG = "Please provide data element id:\n";
         co_await rw_->write(MSG);
     }
 
     auto getUserEvent() -> asio::awaitable<MenuView::UserEvent> override
     {
-        while (auto actionIdx = std::stoi(co_await rw_->read()))
+        do
         {
+            auto data = co_await rw_->read();
+            if (data.empty() || data[0] == '\n')
+            {
+                continue;
+            }
+            auto actionIdx = std::stoi(data);
             if (actionIdx > static_cast<int>(MenuView::UserEvent::InvalidEvent) ||
                 actionIdx < static_cast<int>(MenuView::UserEvent::Cnt))
             {
                 co_return static_cast<MenuView::UserEvent>(actionIdx);
             }
-            constexpr auto ERROR = "Invalid input passed. Try again:";
+            constexpr auto ERROR = "Invalid input passed. Try again:\n";
             co_await rw_->write(ERROR);
-        }
+        } while (true);
         co_return MenuView::UserEvent::InvalidEvent;
+    }
+
+    auto waitForAnyKey() -> asio::awaitable<void> override
+    {
+        co_await rw_->read();
     }
 
     auto getBuffer() -> asio::awaitable<Buffer> override
@@ -103,15 +115,15 @@ public:
 private:
     std::shared_ptr<ReadWriter> rw_;
     std::array<std::string, MAINMENU_OPTIONS_CNT> mainMenu_ = {
-        "Read the blockchain from the disk",
-        "Write the blockchain to the disk",
-        "Accept new daa elements to the buffer",
-        "Generate a new block from the buffer",
-        "Get the specific block",
-        "Get the specific element of a specific block",
-        "Get blockchain statistics (number of blocks, total size in bytes)",
-        "Check blockchain integrity",
-        "Quit"};
+        "Read the blockchain from the disk\n",
+        "Write the blockchain to the disk\n",
+        "Accept new data elements to the buffer\n",
+        "Generate a new block from the buffer\n",
+        "Get the specific block\n",
+        "Get the specific element of a specific block\n",
+        "Get blockchain statistics (number of blocks, total size in bytes)\n",
+        "Check blockchain integrity\n",
+        "Quit\n"};
 };
 }  // namespace frontend
 #endif  // FRONTEND_CONSOLE_MENU_H

@@ -1,3 +1,4 @@
+#include <backend/mockservice.h>
 #include <detached.h>
 #include <frontend/menucontroller.h>
 #include <frontend/mockmenuview.h>
@@ -11,6 +12,7 @@ namespace
 using namespace ::testing;
 using namespace std::literals;
 using namespace frontend::tests;
+using namespace backend::tests;
 using MenuUserEvent = frontend::MenuView::UserEvent;
 
 class MenuControllerTest : public Test
@@ -19,7 +21,9 @@ public:
     asio::io_context ioContext_{1};
     Sequence seq_;
     std::shared_ptr<StrictMock<MockMenuView>> view_{std::make_shared<StrictMock<MockMenuView>>()};
-    std::unique_ptr<frontend::MenuController> menuController_{std::make_unique<frontend::MenuController>(view_)};
+    std::shared_ptr<StrictMock<MockService>> service_{std::make_shared<StrictMock<MockService>>()};
+    std::unique_ptr<frontend::MenuController> menuController_{
+        std::make_unique<frontend::MenuController>(view_, service_)};
 };
 }  // namespace
 

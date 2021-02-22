@@ -44,6 +44,8 @@ public:
 
     virtual auto displayStatisticsMessage() -> asio::awaitable<void> = 0;
 
+    virtual auto waitForAnyKey() -> asio::awaitable<void> = 0;
+
     virtual auto getUserEvent() -> asio::awaitable<MenuView::UserEvent> = 0;
 
     virtual auto getBuffer() -> asio::awaitable<Buffer> = 0;

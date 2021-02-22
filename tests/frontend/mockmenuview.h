@@ -20,6 +20,7 @@ public:
         ON_CALL(*this, displayActionDoneMessage).WillByDefault([]() -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, displayBlockMessage).WillByDefault([]() -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, displayStatisticsMessage).WillByDefault([]() -> asio::awaitable<void> { co_return; });
+        ON_CALL(*this, waitForAnyKey).WillByDefault([]() -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, getUserEvent).WillByDefault([]() -> asio::awaitable<MenuView::UserEvent> {
             co_return MenuView::InvalidEvent;
         });
@@ -36,6 +37,7 @@ public:
     MOCK_METHOD(asio::awaitable<void>, displayActionDoneMessage, (), (override));
     MOCK_METHOD(asio::awaitable<void>, displayBlockMessage, (), (override));
     MOCK_METHOD(asio::awaitable<void>, displayStatisticsMessage, (), (override));
+    MOCK_METHOD(asio::awaitable<void>, waitForAnyKey, (), (override));
     MOCK_METHOD(asio::awaitable<MenuView::UserEvent>, getUserEvent, (), (override));
     MOCK_METHOD(asio::awaitable<Buffer>, getBuffer, (), (override));
     MOCK_METHOD(asio::awaitable<Id>, getId, (), (override));

@@ -19,7 +19,7 @@ constexpr auto DATA_ELEMENT_2 = "DataElement10";
 // NOLINTNEXTLINE
 TEST(BlockParserTest, deserializeBlock)
 {
-    datamodel::Block block = {.prevBlockHash = HASH, .dataElements = {DATA_ELEMENT_1, DATA_ELEMENT_2}};
+    plv::datamodel::Block block = {.prevBlockHash = HASH, .dataElements = {DATA_ELEMENT_1, DATA_ELEMENT_2}};
 
     auto hash              = std::string(std::begin(block.prevBlockHash), std::end(block.prevBlockHash));
     auto blockStr          = fmt::format("32:{},{}:{},{}:{},", hash, strlen(DATA_ELEMENT_1), DATA_ELEMENT_1,

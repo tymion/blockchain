@@ -1,0 +1,5 @@
+add_subdirectory(io)
+add_subdirectory(serializers)
+add_subdirectory(dal)
+add_subdirectory(backend)
+add_subdirectory(frontend)

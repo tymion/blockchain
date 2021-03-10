@@ -1,0 +1,12 @@
+[submodule "ext/asio"]
+	path = ext/asio
+	url = git@github.com:chriskohlhoff/asio.git
+[submodule "ext/googletest"]
+	path = ext/googletest
+	url = git@github.com:google/googletest.git
+[submodule "ext/fmt"]
+	path = ext/fmt
+	url = git@github.com:fmtlib/fmt.git
+[submodule "ext/GSL"]
+	path = ext/GSL
+	url = git@github.com:microsoft/GSL.git

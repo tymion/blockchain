@@ -3,11 +3,8 @@
 
 #include <plv/io/file.h>
 #include <plv/serializers/netstring.h>
-#include <cstdint>
 #include <gsl/gsl_assert>
 #include <memory>
-#include <string>
-#include <string_view>
 #include <vector>
 #include "chunkiterator.h"
 #include "metablock.h"
@@ -21,7 +18,25 @@ public:
     BlockchainStorage(std::shared_ptr<ChunkIterator> chunkIter, std::shared_ptr<io::File> file)
         : file_(file), chunkIterator_(chunkIter)
     {
-        indexStorage();
+    }
+
+    auto indexStorage() -> void override
+    {
+        using namespace serializers::netstring;
+        metaBlocks_.clear();
+        auto chunkOpt = chunkIterator_->getNext();
+        while (chunkOpt.has_value())
+        {
+            uint32_t objectIdx = 0;
+            do
+            {
+                auto chunk                     = chunkOpt->getData().substr(objectIdx);
+                auto [blockStart, blockLength] = decodeOffsetAndLength(chunk);
+                metaBlocks_.emplace_back(chunkOpt->getOffset() + objectIdx + blockStart, blockLength);
+                objectIdx += calculateOffsetOfNextObject(blockStart, blockLength);
+            } while (objectIdx < chunkOpt->getChunkSize() - 1);
+            chunkOpt = chunkIterator_->getNext();
+        }
     }
 
     auto getBlock(Id id) -> Buffer override
@@ -90,29 +105,16 @@ public:
         return file_->getSize();
     }
 
-private:
-    auto indexStorage() -> void
+    auto isIndexed() -> bool override
     {
-        using namespace serializers::netstring;
-        metaBlocks_.clear();
-        auto chunkOpt = chunkIterator_->getNext();
-        while (chunkOpt.has_value())
-        {
-            auto consumed = 0;
-            do
-            {
-                auto chunk                     = chunkOpt->getData().substr(consumed);
-                auto [blockStart, blockLength] = decodeOffsetAndLength(chunk);
-                metaBlocks_.emplace_back(chunkOpt->getOffset() + consumed + blockStart, blockLength);
-                consumed += calculateOffsetOfNextObject(blockStart, blockLength);
-            } while (consumed < chunkOpt->getChunkSize());
-            chunkOpt = chunkIterator_->getNext();
-        }
+        return !(metaBlocks_.size() == 0 && file_->getSize() != 0);
     }
 
+private:
     std::shared_ptr<io::File> file_{};
     std::shared_ptr<ChunkIterator> chunkIterator_{};
     std::vector<dal::MetaBlock> metaBlocks_{};
+    bool indexed_{false};
 };
 }  // namespace plv::dal
 #endif  // PLV_DAL_BLOCKCHAIN_STORAGE_H

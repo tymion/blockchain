@@ -1,10 +1,10 @@
-#ifndef PLV_FRONTEND_CONSOLE_MENU_H
-#define PLV_FRONTEND_CONSOLE_MENU_H
+#ifndef PLV_FRONTEND_CONSOLE_MENU_VIEW_H
+#define PLV_FRONTEND_CONSOLE_MENU_VIEW_H
 
 #include <fmt/format.h>
 #include <array>
-#include <asio/awaitable.hpp>
 #include <memory>
+#include <sstream>
 #include "menuview.h"
 
 namespace plv::frontend
@@ -14,12 +14,12 @@ constexpr auto CHOOSE_MSG           = "Please choose action:";
 constexpr auto MAINMENU_OPTIONS_CNT = static_cast<int>(MenuView::UserEvent::Cnt);
 
 template <typename ReadWriter>
-class ConsoleMenu : public MenuView
+class ConsoleMenuView : public MenuView
 {
 public:
-    ConsoleMenu(std::shared_ptr<ReadWriter> rw) : rw_(rw) {}
+    ConsoleMenuView(std::shared_ptr<ReadWriter> rw) : rw_(rw) {}
 
-    auto displayMainMenu() -> asio::awaitable<void> override
+    auto displayMainMenu() -> Awaitable<void> override
     {
         for (auto i = 0; i < UserEvent::Cnt; i++)
         {
@@ -28,46 +28,49 @@ public:
         }
     }
 
-    auto clearScreen() -> asio::awaitable<void> override
+    auto clearScreen() -> Awaitable<void> override
     {
         constexpr auto CLEAR = "\x1B[2J\x1B[H";
         co_await rw_->write(CLEAR);
     }
 
-    auto displayCloseMessage() -> asio::awaitable<void> override
+    auto displayCloseMessage() -> Awaitable<void> override
     {
         constexpr auto CLOSE = "Received 'q'. Closing.";
         co_await rw_->write(CLOSE);
     }
 
-    auto displayRequestForBuffer() -> asio::awaitable<void> override
+    auto displayRequestForBuffer() -> Awaitable<void> override
     {
         constexpr auto MSG = "Please provide data element:\n";
         co_await rw_->write(MSG);
     }
 
-    auto displayRequestForBlockId() -> asio::awaitable<void> override
+    auto displayRequestForBlockId() -> Awaitable<void> override
     {
         constexpr auto MSG = "Please provide block id:\n";
         co_await rw_->write(MSG);
     }
 
-    auto displayRequestForDataElementId() -> asio::awaitable<void> override
+    auto displayRequestForDataElementId() -> Awaitable<void> override
     {
         constexpr auto MSG = "Please provide data element id:\n";
         co_await rw_->write(MSG);
     }
 
-    auto displayActionDoneMessage() -> asio::awaitable<void> override
+    auto displayActionDoneMessage() -> Awaitable<void> override
     {
         constexpr auto MSG = "Done. Please press any key to return to main menu.\n";
         co_await rw_->write(MSG);
     }
 
-    auto displayBlockMessage(const datamodel::Block& block) -> asio::awaitable<void> override
+    auto displayBlockMessage(const datamodel::Block& block) -> Awaitable<void> override
     {
         constexpr auto MSG_FMT = "Requested block:\nPrev block hash:{}\n";
-        auto msg               = fmt::format(MSG_FMT, block.prevBlockHash.data());
+        std::stringstream sstream;
+        std::for_each(std::begin(block.prevBlockHash), std::end(block.prevBlockHash),
+                      [&](auto& item) { sstream << std::hex << (int)item; });
+        auto msg = fmt::format(MSG_FMT, sstream.str());
         for (auto& element : block.dataElements)
         {
             msg += fmt::format("DataElement:{}\n", element);
@@ -75,14 +78,33 @@ public:
         co_await rw_->write(msg);
     }
 
-    auto displayStatisticsMessage(Size blockchainLength, Size storageSize) -> asio::awaitable<void> override
+    auto displayDataElementMessage(BufferView element) -> Awaitable<void> override
+    {
+        auto msg = fmt::format("Requested data element:{}\n", element);
+        co_await rw_->write(msg);
+    }
+
+    auto displayStatisticsMessage(Size blockchainLength, Size storageSize) -> Awaitable<void> override
     {
         constexpr auto MSG_FMT = "Statistics:\nBlockchain length:{}\nStorage size:{}\n";
         auto msg               = fmt::format(MSG_FMT, blockchainLength, storageSize);
         co_await rw_->write(msg);
     }
 
-    auto getUserEvent() -> asio::awaitable<MenuView::UserEvent> override
+    auto displayBlockchainIntegrityMessage(bool integral) -> Awaitable<void> override
+    {
+        constexpr auto MSG_FMT = "Blockchain integrity:{}\n";
+        auto msg               = fmt::format(MSG_FMT, integral ? "True" : "False");
+        co_await rw_->write(msg);
+    }
+
+    auto displayMessage(BufferView msg) -> Awaitable<void> override
+    {
+        co_await rw_->write(msg);
+        co_await rw_->write("\n");
+    }
+
+    auto getUserEvent() -> Awaitable<MenuView::UserEvent> override
     {
         do
         {
@@ -103,25 +125,29 @@ public:
         co_return MenuView::UserEvent::InvalidEvent;
     }
 
-    auto waitForAnyKey() -> asio::awaitable<void> override
+    auto waitForAnyKey() -> Awaitable<void> override
     {
         co_await rw_->read();
     }
 
-    auto getBuffer() -> asio::awaitable<Buffer> override
+    auto getBuffer() -> Awaitable<Buffer> override
     {
-        return rw_->read();
+        auto result = co_await rw_->read();
+        result.erase(begin(result) + result.size() - 1, end(result));
+        co_return result;
         // co_return std::move(co_await rw_->read());
     }
 
-    auto getId() -> asio::awaitable<Id> override
+    auto getId() -> Awaitable<Id> override
     {
-        co_return 0;
+        auto buffer = co_await rw_->read();
+        co_return std::stoi(buffer);
     }
 
 private:
     std::shared_ptr<ReadWriter> rw_;
     std::array<std::string, MAINMENU_OPTIONS_CNT> mainMenu_ = {
+        "Read the blockchain from the disk\n",
         "Write the blockchain to the disk\n",
         "Accept new data elements to the buffer\n",
         "Generate a new block from the buffer\n",
@@ -130,6 +156,6 @@ private:
         "Get blockchain statistics (number of blocks, total size in bytes)\n",
         "Check blockchain integrity\n",
         "Quit\n"};
-};
+};  // namespace plv::frontend
 }  // namespace plv::frontend
-#endif  // PLV_FRONTEND_CONSOLE_MENU_H
+#endif  // PLV_FRONTEND_CONSOLE_MENU_VIEW_H

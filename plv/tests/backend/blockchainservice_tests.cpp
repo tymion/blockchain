@@ -99,11 +99,10 @@ TEST_F(BlockchainServiceTest, dataElementsInCache)
 }
 
 // NOLINTNEXTLINE
-TEST_F(BlockchainServiceTest, generatBlock)
+TEST_F(BlockchainServiceTest, generateBlockFromCache)
 {
     EXPECT_CALL(*storage_, getChainLength).Times(1);
     EXPECT_CALL(*storage_, getBlock).Times(1);
-    EXPECT_CALL(*storage_, addBlock).WillOnce([&](auto block) { EXPECT_EQ(block, SECOND_BLOCK_STR); });
     service_->addDataElementToCache(DATA_ELEMENT_3);
     service_->addDataElementToCache(DATA_ELEMENT_4);
     auto block = service_->generateBlockFromCache();
@@ -113,7 +112,7 @@ TEST_F(BlockchainServiceTest, generatBlock)
 }
 
 // NOLINTNEXTLINE
-TEST_F(BlockchainServiceTest, generatBlockException)
+TEST_F(BlockchainServiceTest, generateBlockFromCachekException)
 {
     auto elements = service_->getDataElementsFromCache();
     EXPECT_FALSE(elements.has_value());

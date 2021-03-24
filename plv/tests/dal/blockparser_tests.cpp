@@ -21,8 +21,11 @@ TEST(BlockParserTest, deserializeBlock)
 {
     plv::datamodel::Block block = {.prevBlockHash = HASH, .dataElements = {DATA_ELEMENT_1, DATA_ELEMENT_2}};
 
-    auto hash              = std::string(std::begin(block.prevBlockHash), std::end(block.prevBlockHash));
-    auto blockStr          = fmt::format("32:{},{}:{},{}:{},", hash, strlen(DATA_ELEMENT_1), DATA_ELEMENT_1,
+    std::stringstream sstream;
+    std::for_each(std::begin(block.prevBlockHash), std::end(block.prevBlockHash),
+                  [&](auto& item) { sstream << std::hex << (int)item; });
+    auto hashStr  = sstream.str();
+    auto blockStr = fmt::format("{}:{},{}:{},{}:{},", hashStr.size(), hashStr, strlen(DATA_ELEMENT_1), DATA_ELEMENT_1,
                                 strlen(DATA_ELEMENT_2), DATA_ELEMENT_2);
     auto blockDeserialized = BlockParser::deserialize(blockStr);
     EXPECT_EQ(blockDeserialized.prevBlockHash, block.prevBlockHash);

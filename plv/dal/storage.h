@@ -1,17 +1,13 @@
 #ifndef PLV_DAL_STORAGE_H
 #define PLV_DAL_STORAGE_H
-#include <cstdint>
-#include <string>
+#include <plv/types.h>
 
 namespace plv::dal
 {
 class Storage
 {
 public:
-    using BufferView = std::string_view;
-    using Buffer     = std::string;
-    using Size       = uint32_t;
-    using Id         = uint32_t;
+    virtual auto indexStorage() -> void = 0;
 
     virtual auto getBlock(Id id) -> Buffer = 0;
 
@@ -20,6 +16,8 @@ public:
     virtual auto getChainLength() -> Size = 0;
 
     virtual auto getStorageSize() -> Size = 0;
+
+    virtual auto isIndexed() -> bool = 0;
 };
 }  // namespace plv::dal
 #endif  // PLV_DAL_STORAGE_H

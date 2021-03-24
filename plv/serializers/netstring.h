@@ -23,7 +23,7 @@ auto decodeOffsetAndLength(BufferView buffer) -> std::pair<Size, Size>
     constexpr auto MIN_MSG_LEN = sizeof("0:,") - 1;
     if (buffer.size() < MIN_MSG_LEN)
     {
-        return {{}, {}};
+        throw std::logic_error("Invalid data. Too short buffer.");
     }
     auto colonIdx   = buffer.find_first_of(":");
     auto dataLength = Size{};

@@ -2,20 +2,17 @@
 #define PLV_FRONTEND_MENU_VIEW_H
 
 #include <plv/datamodel/block.h>
-#include <asio/awaitable.hpp>
+#include "types.h"
 
 namespace plv::frontend
 {
 class MenuView
 {
 public:
-    using Buffer = std::string;
-    using Id     = uint32_t;
-    using Size   = uint32_t;
-
     enum UserEvent
     {
         InvalidEvent = -1,
+        ReadBlockchain,
         WriteBlockchain,
         AddDataElement,
         GenerateBlockchain,
@@ -27,31 +24,37 @@ public:
         Cnt
     };
 
-    virtual auto displayMainMenu() -> asio::awaitable<void> = 0;
+    virtual auto displayMainMenu() -> Awaitable<void> = 0;
 
-    virtual auto clearScreen() -> asio::awaitable<void> = 0;
+    virtual auto clearScreen() -> Awaitable<void> = 0;
 
-    virtual auto displayCloseMessage() -> asio::awaitable<void> = 0;
+    virtual auto displayCloseMessage() -> Awaitable<void> = 0;
 
-    virtual auto displayRequestForBuffer() -> asio::awaitable<void> = 0;
+    virtual auto displayRequestForBuffer() -> Awaitable<void> = 0;
 
-    virtual auto displayRequestForBlockId() -> asio::awaitable<void> = 0;
+    virtual auto displayRequestForBlockId() -> Awaitable<void> = 0;
 
-    virtual auto displayRequestForDataElementId() -> asio::awaitable<void> = 0;
+    virtual auto displayRequestForDataElementId() -> Awaitable<void> = 0;
 
-    virtual auto displayActionDoneMessage() -> asio::awaitable<void> = 0;
+    virtual auto displayActionDoneMessage() -> Awaitable<void> = 0;
 
-    virtual auto displayBlockMessage(const datamodel::Block&) -> asio::awaitable<void> = 0;
+    virtual auto displayBlockMessage(const datamodel::Block&) -> Awaitable<void> = 0;
 
-    virtual auto displayStatisticsMessage(Size, Size) -> asio::awaitable<void> = 0;
+    virtual auto displayDataElementMessage(BufferView) -> Awaitable<void> = 0;
 
-    virtual auto waitForAnyKey() -> asio::awaitable<void> = 0;
+    virtual auto displayStatisticsMessage(Size, Size) -> Awaitable<void> = 0;
 
-    virtual auto getUserEvent() -> asio::awaitable<MenuView::UserEvent> = 0;
+    virtual auto displayBlockchainIntegrityMessage(bool) -> Awaitable<void> = 0;
 
-    virtual auto getBuffer() -> asio::awaitable<Buffer> = 0;
+    virtual auto displayMessage(BufferView) -> Awaitable<void> = 0;
 
-    virtual auto getId() -> asio::awaitable<Id> = 0;
+    virtual auto waitForAnyKey() -> Awaitable<void> = 0;
+
+    virtual auto getUserEvent() -> Awaitable<MenuView::UserEvent> = 0;
+
+    virtual auto getBuffer() -> Awaitable<Buffer> = 0;
+
+    virtual auto getId() -> Awaitable<Id> = 0;
 };
 }  // namespace plv::frontend
 #endif  // PLV_FRONTEND_MENU_VIEW_H

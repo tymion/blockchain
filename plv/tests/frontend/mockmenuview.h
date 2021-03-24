@@ -17,9 +17,14 @@ public:
         ON_CALL(*this, displayRequestForBuffer).WillByDefault([]() -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, displayRequestForBlockId).WillByDefault([]() -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, displayRequestForDataElementId).WillByDefault([]() -> asio::awaitable<void> { co_return; });
+        ON_CALL(*this, displayMessage).WillByDefault([](auto) -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, displayActionDoneMessage).WillByDefault([]() -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, displayBlockMessage).WillByDefault([](const auto&) -> asio::awaitable<void> { co_return; });
+        ON_CALL(*this, displayDataElementMessage).WillByDefault([](auto) -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, displayStatisticsMessage).WillByDefault([](auto, auto) -> asio::awaitable<void> { co_return; });
+        ON_CALL(*this, displayBlockchainIntegrityMessage).WillByDefault([](auto) -> asio::awaitable<void> {
+            co_return;
+        });
         ON_CALL(*this, waitForAnyKey).WillByDefault([]() -> asio::awaitable<void> { co_return; });
         ON_CALL(*this, getUserEvent).WillByDefault([]() -> asio::awaitable<MenuView::UserEvent> {
             co_return MenuView::InvalidEvent;
@@ -34,9 +39,12 @@ public:
     MOCK_METHOD(asio::awaitable<void>, displayRequestForBuffer, (), (override));
     MOCK_METHOD(asio::awaitable<void>, displayRequestForBlockId, (), (override));
     MOCK_METHOD(asio::awaitable<void>, displayRequestForDataElementId, (), (override));
+    MOCK_METHOD(asio::awaitable<void>, displayMessage, (BufferView), (override));
     MOCK_METHOD(asio::awaitable<void>, displayActionDoneMessage, (), (override));
     MOCK_METHOD(asio::awaitable<void>, displayBlockMessage, (const datamodel::Block&), (override));
+    MOCK_METHOD(asio::awaitable<void>, displayDataElementMessage, (BufferView), (override));
     MOCK_METHOD(asio::awaitable<void>, displayStatisticsMessage, (Size, Size), (override));
+    MOCK_METHOD(asio::awaitable<void>, displayBlockchainIntegrityMessage, (bool), (override));
     MOCK_METHOD(asio::awaitable<void>, waitForAnyKey, (), (override));
     MOCK_METHOD(asio::awaitable<MenuView::UserEvent>, getUserEvent, (), (override));
     MOCK_METHOD(asio::awaitable<Buffer>, getBuffer, (), (override));

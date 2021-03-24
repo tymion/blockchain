@@ -3,23 +3,17 @@
 
 #include <plv/datamodel/block.h>
 #include <plv/serializers/netstring.h>
+#include <plv/types.h>
 #include <algorithm>
 #include <charconv>
-#include <cstdint>
-#include <stdexcept>
-#include <string>
-#include <string_view>
+#include <iomanip>
+#include <sstream>
 
 namespace plv::dal
 {
 class BlockParser
 {
 public:
-    using Size       = uint32_t;
-    using Offset     = uint32_t;
-    using Buffer     = std::string;
-    using BufferView = std::string_view;
-
     static auto deserialize(BufferView data) -> datamodel::Block
     {
         using namespace serializers::netstring;
@@ -36,13 +30,17 @@ public:
     static auto serialize(datamodel::Block block) -> Buffer
     {
         using namespace serializers::netstring;
-        std::string elements{};
+        using namespace std;
+        string elements{};
         for (const auto& element : block.dataElements)
         {
             elements = fmt::format("{}{}", elements, encode(element));
         }
-        auto hash = std::string(std::begin(block.prevBlockHash), std::end(block.prevBlockHash));
-        return fmt::format("{}{}", encode(hash), elements);
+        stringstream sstream;
+        sstream << hex << setw(2) << setfill('0');
+        for_each(begin(block.prevBlockHash), end(block.prevBlockHash),
+                 [&](auto& item) { sstream << hex << setw(2) << setfill('0') << (int)item; });
+        return fmt::format("{}{}", encode(sstream.str()), elements);
     }
 
 private:
@@ -51,7 +49,11 @@ private:
         using namespace serializers::netstring;
         using namespace std;
         auto [hash, consumed] = decode(data);
-        copy(begin(hash), end(hash), block.prevBlockHash.data());
+        for (auto i = 0; i < hash.size(); i += 2)
+        {
+            auto bufferView = hash.substr(i, 2);
+            from_chars(begin(bufferView), end(bufferView), block.prevBlockHash[i / 2], 16);
+        }
         return consumed;
     }
 

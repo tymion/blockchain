@@ -12,17 +12,18 @@ ConsoleReadWriter::ConsoleReadWriter(const asio::any_io_executor& executor)
 {
 }
 // NOLINTNEXTLINE(readability-identifier-naming)
-auto ConsoleReadWriter::write(std::string_view buffer) noexcept -> asio::awaitable<void>
+auto ConsoleReadWriter::write(BufferView buffer) noexcept -> Awaitable<void>
 {
     co_await asio::async_write(ostream_, asio::buffer(buffer.data(), buffer.size()), asio::use_awaitable);
 }
 
 // NOLINTNEXTLINE(readability-identifier-naming)
-auto ConsoleReadWriter::read() -> asio::awaitable<std::string>
+auto ConsoleReadWriter::read() -> Awaitable<Buffer>
 {
     asio::streambuf streambuffer;
     co_await asio::async_read_until(istream_, streambuffer, '\n', asio::use_awaitable);
     auto buffer = streambuffer.data();
+    // co_return std::string{asio::buffers_begin(buffer), asio::buffers_begin(buffer) + buffer.size() - 2};
     co_return std::string{asio::buffers_begin(buffer), asio::buffers_end(buffer)};
 }
 

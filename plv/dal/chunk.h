@@ -1,18 +1,13 @@
 #ifndef PLV_DAL_CHUNK_H
 #define PLV_DAL_CHUNK_H
 
-#include <cstdint>
-#include <string_view>
+#include <plv/types.h>
 
 namespace plv::dal
 {
 class Chunk
 {
 public:
-    using Size       = uint32_t;
-    using Offset     = uint32_t;
-    using BufferView = std::string_view;
-
     Chunk(BufferView chunk, Offset offset, Size size) : chunk_(chunk), offset_(offset), size_(size) {}
 
     auto getChunkSize()

@@ -37,6 +37,7 @@ TEST_F(MenuControllerTest, runWithWriteBlockchain)
     EXPECT_CALL(*view_, getUserEvent).InSequence(seq_).WillOnce([]() -> asio::awaitable<MenuUserEvent> {
         co_return MenuUserEvent::WriteBlockchain;
     });
+    EXPECT_CALL(*service_, saveCacheInStorage).InSequence(seq_);
     EXPECT_CALL(*view_, displayActionDoneMessage).InSequence(seq_);
     EXPECT_CALL(*view_, waitForAnyKey).InSequence(seq_);
     EXPECT_CALL(*view_, clearScreen).InSequence(seq_);
@@ -56,7 +57,6 @@ TEST_F(MenuControllerTest, runWithWriteBlockchain)
 TEST_F(MenuControllerTest, runWithAddDataElement)
 {
     using namespace std::literals;
-    using Buffer    = frontend::MenuView::Buffer;
     auto testBuffer = "BlockchainDataElement"s;
     EXPECT_CALL(*view_, clearScreen).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
@@ -69,6 +69,7 @@ TEST_F(MenuControllerTest, runWithAddDataElement)
     EXPECT_CALL(*view_, getBuffer).InSequence(seq_).WillOnce([=]() -> asio::awaitable<Buffer> {
         co_return testBuffer;
     });
+    EXPECT_CALL(*service_, addDataElementToCache).InSequence(seq_);
     EXPECT_CALL(*view_, displayActionDoneMessage).InSequence(seq_);
     EXPECT_CALL(*view_, waitForAnyKey).InSequence(seq_);
     EXPECT_CALL(*view_, clearScreen).InSequence(seq_);
@@ -113,7 +114,6 @@ TEST_F(MenuControllerTest, runWithGenerateBlockchain)
 TEST_F(MenuControllerTest, runWithGetBlock)
 {
     constexpr auto TEST_ID = 13;
-    using Id               = frontend::MenuView::Id;
     EXPECT_CALL(*view_, clearScreen).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
     // NOLINTNEXTLINE(readability-identifier-naming)
@@ -144,7 +144,6 @@ TEST_F(MenuControllerTest, runWithGetDataElement)
 {
     constexpr auto TEST_BLOCKID       = 13;
     constexpr auto TEST_DATAELEMENTID = 2;
-    using Id                          = frontend::MenuView::Id;
     EXPECT_CALL(*view_, clearScreen).InSequence(seq_);
     EXPECT_CALL(*view_, displayMainMenu).InSequence(seq_);
     // NOLINTNEXTLINE(readability-identifier-naming)
@@ -160,6 +159,7 @@ TEST_F(MenuControllerTest, runWithGetDataElement)
         co_return TEST_DATAELEMENTID;
     });
     EXPECT_CALL(*service_, getDataElementFromBlockById).InSequence(seq_);
+    EXPECT_CALL(*view_, displayDataElementMessage).InSequence(seq_);
     EXPECT_CALL(*view_, displayActionDoneMessage).InSequence(seq_);
     EXPECT_CALL(*view_, waitForAnyKey).InSequence(seq_);
     EXPECT_CALL(*view_, clearScreen).InSequence(seq_);

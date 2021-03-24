@@ -35,8 +35,8 @@ TEST_F(ConsoleReadWriterTest, WriteHelloWorld)
 }
 
 // NOLINTNEXTLINE
-/*
-TEST_F(ConsoleReadWriterTest, ReadHelloWorld)
+
+TEST_F(ConsoleReadWriterTest, DISABLED_ReadHelloWorld)
 {
     co_spawn(
         ioContext_,
@@ -48,4 +48,3 @@ TEST_F(ConsoleReadWriterTest, ReadHelloWorld)
         tests::utils::Detached{});
     ioContext_.run();
 }
-*/

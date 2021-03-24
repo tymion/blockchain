@@ -10,12 +10,15 @@ class MockService : public plv::backend::Service
 {
 public:
     MOCK_METHOD(datamodel::Block, getBlockById, (Id), (override));
-    MOCK_METHOD(BufferView, getDataElementFromBlockById, (Id, Id), (override));
+    MOCK_METHOD(Buffer, getDataElementFromBlockById, (Id, Id), (override));
     MOCK_METHOD(Size, getBlockchainLength, (), (override));
     MOCK_METHOD(Size, getBlockchainStorageSize, (), (override));
+    MOCK_METHOD(void, saveCacheInStorage, (), (override));
+    MOCK_METHOD(void, readStorage, (), (override));
     MOCK_METHOD(void, addDataElementToCache, (BufferView), (override));
     MOCK_METHOD((std::optional<std::vector<BufferView>>), getDataElementsFromCache, (), (override));
     MOCK_METHOD(datamodel::Block, generateBlockFromCache, (), (override));
+    MOCK_METHOD(bool, checkBlockchainIntegrity, (), (override));
 };
 }  // namespace plv::tests::backend
 

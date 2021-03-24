@@ -2,11 +2,9 @@
 #define PLV_DAL_CHUNK_ITERATOR_H
 
 #include <plv/io/file.h>
-#include <cstdint>
+#include <plv/types.h>
 #include <memory>
 #include <optional>
-#include <string>
-#include <string_view>
 #include "chunk.h"
 
 namespace plv::dal
@@ -15,19 +13,21 @@ constexpr uint32_t CHUNK_SIZE = 4 * 1024;
 class ChunkIterator
 {
 public:
-    using Size       = uint32_t;
-    using Buffer     = std::string;
-    using BufferView = std::string_view;
-
-    ChunkIterator(std::shared_ptr<io::File> file) : file_(file), size_(file_->getSize()), leftToRead_(file_->getSize())
+    ChunkIterator(std::shared_ptr<io::File> file) : file_(file)
     {
-        chunk_.reserve(CHUNK_SIZE);
+        chunk_.resize(CHUNK_SIZE);
     }
 
     auto getNext() -> std::optional<Chunk>
     {
+        if (begin_)
+        {
+            leftToRead_ = file_->getSize();
+            begin_      = false;
+        }
         if (leftToRead_ == 0)
         {
+            begin_ = true;
             return {};
         }
         auto readLength = CHUNK_SIZE;
@@ -35,18 +35,18 @@ public:
         {
             readLength = leftToRead_;
         }
-        file_->read(chunk_, readLength);
-        auto chunkOffset = size_ - leftToRead_;
+        auto chunkOffset = file_->getSize() - leftToRead_;
+        file_->read(chunk_, chunkOffset, readLength);
         leftToRead_ -= readLength;
-
-        return Chunk{BufferView{chunk_}.substr(0, readLength), chunkOffset, readLength};
+        auto chunkView = BufferView{chunk_};
+        return Chunk{chunkView.substr(0, readLength), chunkOffset, readLength};
     }
 
 private:
     std::shared_ptr<io::File> file_;
     Size leftToRead_{};
-    Size size_{};
     Buffer chunk_{};
+    bool begin_{true};
 };
 }  // namespace plv::dal
 

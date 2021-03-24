@@ -1,15 +1,12 @@
 #ifndef PLV_DAL_META_BLOCK_H
 #define PLV_DAL_META_BLOCK_H
 
-#include <cstdint>
+#include <plv/types.h>
 
 namespace plv::dal
 {
 struct MetaBlock
 {
-    using Offset = uint32_t;
-    using Size   = uint32_t;
-
     MetaBlock(Offset offset, Size size) : blockOffset(offset), blockSize(size) {}
 
     Offset blockOffset;

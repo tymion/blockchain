@@ -30,6 +30,7 @@ public:
         EXPECT_CALL(*file_, getSize()).WillRepeatedly(Return(data.size()));
         iter_    = std::make_shared<ChunkIterator>(file_);
         storage_ = std::make_shared<BlockchainStorage>(iter_, file_);
+        storage_->indexStorage();
     }
     // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
     std::shared_ptr<StrictMock<MockFile>> file_{std::make_shared<StrictMock<MockFile>>()};
